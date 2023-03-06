@@ -7,7 +7,7 @@ public class ExamplePluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ClanChatPlugin.class);
+		ExternalPluginManager.loadBuiltin(ClanChatWebhookPlugin.class);
 		RuneLite.main(args);
 	}
 }

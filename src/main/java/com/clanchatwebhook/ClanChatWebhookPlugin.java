@@ -23,13 +23,13 @@ import static net.runelite.http.api.RuneLiteAPI.GSON;
 @PluginDescriptor(
 	name = "Clan Chat Webhook"
 )
-public class ClanChatPlugin extends Plugin
+public class ClanChatWebhookPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private ClanChatConfig config;
+	private ClanChatWebhookConfig config;
 
 	@Inject
 	private OkHttpClient okHttpClient;
@@ -144,8 +144,8 @@ public class ClanChatPlugin extends Plugin
 	}
 
 	@Provides
-	ClanChatConfig provideConfig(ConfigManager configManager)
+	ClanChatWebhookConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(ClanChatConfig.class);
+		return configManager.getConfig(ClanChatWebhookConfig.class);
 	}
 }

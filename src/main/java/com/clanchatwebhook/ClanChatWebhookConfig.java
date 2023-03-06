@@ -4,8 +4,8 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("clanchat")
-public interface ClanChatConfig extends Config
+@ConfigGroup("clanchatwebhook")
+public interface ClanChatWebhookConfig extends Config
 {
 	@ConfigItem(
 			keyName = "webhook",
