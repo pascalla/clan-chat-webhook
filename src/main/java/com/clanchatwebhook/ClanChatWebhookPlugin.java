@@ -51,7 +51,11 @@ public class ClanChatWebhookPlugin extends Plugin
 
 		if ((event.getType() == ChatMessageType.CLAN_MESSAGE) && config.sendBroadcasts())
 		{
-			if(!(Objects.equals(client.getLocalPlayer().getName(), event.getName())) && !config.sendAll())
+
+			boolean isPersonalName = Objects.equals(client.getLocalPlayer().getName(), event.getName());
+			boolean startsWithName = event.getMessage().startsWith(Objects.requireNonNull(client.getLocalPlayer().getName()));
+
+			if(!(isPersonalName || startsWithName) && !config.sendAll())
 			{
 				return;
 			}
