@@ -61,16 +61,11 @@ public class ClanChatWebhookPlugin extends Plugin
 		String author;
 		String content;
 
-		log.info("Chat Message");
-
 		if (chatMessage.getType() == ChatMessageType.CLAN_CHAT || chatMessage.getType() == ChatMessageType.CLAN_MESSAGE)
 		{
-			log.info("Clan Chat Message");
-
 			content = sanitizeMessage(chatMessage.getMessage());
 
 			if (!content.contains("</col>")) {
-				log.info("Sending Chat Message");
 				sendMessage(chatMessage);
 			}
 		}
@@ -184,8 +179,6 @@ public class ClanChatWebhookPlugin extends Plugin
 
 		ClanMessageEvent messageEvent = new ClanMessageEvent(author, content, accountType, systemMessageType, chatMessage.getTimestamp());
 
-		log.info("Chat Message: " + messageEvent);
-
 		sendWebhook(messageEvent);
 	}
 
@@ -193,8 +186,6 @@ public class ClanChatWebhookPlugin extends Plugin
 	private void sendWebhook(ClanMessageEvent messageEvent)
 	{
 		String configUrl = config.webhookEndpoint() + "/webhook/" + config.secretKey();
-
-		log.info("Config URL: " + configUrl);
 
 		if (Strings.isNullOrEmpty(configUrl)) { return; }
 
@@ -229,8 +220,7 @@ public class ClanChatWebhookPlugin extends Plugin
 
 			@Override
 			public void onResponse(Call call, Response response) throws IOException
-			{
-				log.info("Response: " + response.body().string());
+
 				response.close();
 			}
 		});
