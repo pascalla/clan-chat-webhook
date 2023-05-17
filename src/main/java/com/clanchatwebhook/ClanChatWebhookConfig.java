@@ -7,58 +7,26 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("clanchatwebhook")
 public interface ClanChatWebhookConfig extends Config
 {
+
 	@ConfigItem(
-			keyName = "webhook",
-			name = "Webhook URL",
-			description = "The URL to send the Webhook data too",
+			keyName = "secret",
+			name = "Secret Key",
+			description = "The secret key for your clan.",
 			position = 0
 	)
-	default String webhook()
+	default String secretKey()
 	{
 		return "";
 	}
 
 	@ConfigItem(
-			keyName = "discord",
-			name = "Discord Webhook",
-			description = "Is the Webhook a Discord Channel Webhook?",
+			keyName = "webhook_endpoint",
+			name = "Webhook Endpoint",
+			description = "The endpoint for your webhook",
 			position = 1
 	)
-	default boolean discordWebhook()
+	default String webhookEndpoint()
 	{
-		return false;
-	}
-
-	@ConfigItem(
-			keyName = "broadcasts",
-			name = "Send My Broadcasts",
-			description = "Send my Broadcasts, eg Level up and Collection Log notifications ",
-			position = 2
-	)
-	default boolean sendBroadcasts()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-			keyName = "chat",
-			name = "Send My Chat Messages",
-			description = "Send My Chat Messages",
-			position = 3
-	)
-	default boolean sendChat()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-			keyName = "all",
-			name = "Send Others",
-			description = "Send Chats of Others",
-			position = 3
-	)
-	default boolean sendAll()
-	{
-		return false;
+		return "http://127.0.0.1";
 	}
 }

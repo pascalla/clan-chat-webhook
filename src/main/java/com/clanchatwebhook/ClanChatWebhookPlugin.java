@@ -7,7 +7,10 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.clan.ClanChannel;
+import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.ClanChannelChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -34,66 +37,164 @@ public class ClanChatWebhookPlugin extends Plugin
 	@Inject
 	private OkHttpClient okHttpClient;
 
+	public boolean activeClan = false;
+
 	@Subscribe
-	public void onChatMessage(ChatMessage event)
+	private void onClanChannelChanged(ClanChannelChanged event)
 	{
-		if ((event.getType() == ChatMessageType.CLAN_CHAT) && config.sendChat())
+		if (event.getClanId() == ClanID.CLAN)
 		{
-			boolean personalMessage = Objects.equals(client.getLocalPlayer().getName(), event.getName());
+			ClanChannel clan = client.getClanChannel();
+			String clanName = client.getClanChannel().getName();
 
-			if(!personalMessage && !config.sendAll())
-			{
-				return;
+			if (clan != null && clanName != null) {
+				activeClan = true;
+			} else {
+				activeClan = false;
 			}
-
-			sendMessage(event);
-		}
-
-		if ((event.getType() == ChatMessageType.CLAN_MESSAGE) && config.sendBroadcasts())
-		{
-
-			boolean isPersonalName = Objects.equals(client.getLocalPlayer().getName(), event.getName());
-			boolean startsWithName = event.getMessage().startsWith(Objects.requireNonNull(client.getLocalPlayer().getName()));
-
-			if(!(isPersonalName || startsWithName) && !config.sendAll())
-			{
-				return;
-			}
-
-			if (event.getSender() == null)
-			{
-				return;
-			}
-
-			sendMessage(event);
 		}
 	}
 
-	private void sendMessage(ChatMessage message)
+	@Subscribe
+	public void onChatMessage(ChatMessage chatMessage)
 	{
-		boolean discordWebhook = config.discordWebhook();
-		ClanMessageEvent messageEvent = new ClanMessageEvent(message.getName(), message.getMessage(), message.getTimestamp());
+		String author;
+		String content;
 
-		if (discordWebhook)
+		log.info("Chat Message");
+
+		if (chatMessage.getType() == ChatMessageType.CLAN_CHAT || chatMessage.getType() == ChatMessageType.CLAN_MESSAGE)
 		{
-			generateDiscordWebhookPayload(messageEvent);
-		}
-		else
-		{
-			sendWebhook(messageEvent);
+			log.info("Clan Chat Message");
+
+			content = sanitizeMessage(chatMessage.getMessage());
+
+			if (!content.contains("</col>")) {
+				log.info("Sending Chat Message");
+				sendMessage(chatMessage);
+			}
 		}
 	}
 
-	private void generateDiscordWebhookPayload(ClanMessageEvent event)
-	{
-		DiscordWebhookBody discordWebhookBody = new DiscordWebhookBody();
-		discordWebhookBody.setContent(event.toDiscordContentString());
-		sendDiscordWebhook(discordWebhookBody);
+	public enum SystemMessageType {
+		NORMAL(1),
+		DROP(2),
+		RAID_DROP(3),
+		PET_DROP(4),
+		PERSONAL_BEST(5),
+		COLLECTION_LOG(6),
+		QUEST(7),
+		PVP(8),
+		ATTENDANCE(9),
+		LOGIN(-1);
+
+		public final int code;
+
+		private SystemMessageType(int code) {
+			this.code = code;
+		}
 	}
+
+	public enum AccountType {
+		NORMAL(1),
+		IRON(2),
+		HARDCORE_IRON(3),
+		ULTIMATE_IRON(4),
+		UNRANKED_IRON(5),
+		GROUP_IRON(6),
+		HARDCORE_GROUP_IRON(7),
+		PLAYER_MODERATOR(8),
+		JAGEX_MODERATOR(9);
+
+		public final int code;
+
+		private AccountType(int code) {
+			this.code = code;
+		}
+	}
+
+	private SystemMessageType getSystemMessageType(String message)
+	{
+		if (message.contains("received a drop:")) {
+			return SystemMessageType.DROP;
+		} else if (message.contains("received special loot from a raid:")) {
+			return SystemMessageType.RAID_DROP;
+		} else if (message.contains("has completed a quest:")) {
+			return SystemMessageType.QUEST;
+		} else if (message.contains("received a new collection log item:")) {
+			return SystemMessageType.COLLECTION_LOG;
+		} else if (message.contains("personal best:")) {
+			return SystemMessageType.PERSONAL_BEST;
+		} else if (message.contains("To talk in your clan's channel, start each line of chat with")) {
+			return SystemMessageType.LOGIN;
+		} else if (message.contains("has defeated") || message.contains("has been defeated by")) {
+			return SystemMessageType.PVP;
+		} else if (message.contains("has a funny feeling like")) {
+			return SystemMessageType.PET_DROP;
+		} else if (message.contains("has left.") || message.contains("has joined.")) {
+			return SystemMessageType.ATTENDANCE;
+		} else {
+			return SystemMessageType.NORMAL;
+		}
+	}
+
+	public AccountType getAccountType(String message)
+	{
+		if (message.contains("<img=0>")) {
+			return AccountType.PLAYER_MODERATOR;
+		} else if (message.contains("<img=2>")) {
+			return AccountType.IRON;
+		} else if (message.contains("<img=10>")) {
+			return AccountType.HARDCORE_IRON;
+		} else if (message.contains("<img=11>")) {
+			return AccountType.ULTIMATE_IRON;
+		} else if (message.contains("<img=41>")) {
+			return AccountType.GROUP_IRON;
+		} else if (message.contains("<img=43>")) {
+			return AccountType.UNRANKED_IRON;
+		} else if (message.contains("<img=42>")) {
+			return AccountType.HARDCORE_GROUP_IRON;
+		} else {
+			return AccountType.NORMAL;
+		}
+	}
+
+	private String sanitizeMessage(String message)
+	{
+		String newMessage = message;
+		newMessage = newMessage.replace((char)160, ' ');
+		newMessage = newMessage.replace("<lt>", "<");
+		newMessage = newMessage.replace("<gt>", ">");
+		return additionalCustomizations(newMessage);
+	}
+
+	private String additionalCustomizations(String message)
+	{
+		String newMessage = message;
+		newMessage = newMessage.replaceAll("\\<img=\\d+\\>", "");
+		return newMessage;
+	}
+
+	private void sendMessage(ChatMessage chatMessage)
+	{
+		String author = chatMessage.getName().replace((char)160, ' ').replaceAll("<img=\\d+>", "");
+		String content = sanitizeMessage(chatMessage.getMessage());
+		AccountType accountType = getAccountType(chatMessage.getName());
+		SystemMessageType systemMessageType = getSystemMessageType(chatMessage.getMessage());
+
+		ClanMessageEvent messageEvent = new ClanMessageEvent(author, content, accountType, systemMessageType, chatMessage.getTimestamp());
+
+		log.info("Chat Message: " + messageEvent);
+
+		sendWebhook(messageEvent);
+	}
+
 
 	private void sendWebhook(ClanMessageEvent messageEvent)
 	{
-		String configUrl = config.webhook();
+		String configUrl = config.webhookEndpoint() + "/webhook/" + config.secretKey();
+
+		log.info("Config URL: " + configUrl);
 
 		if (Strings.isNullOrEmpty(configUrl)) { return; }
 
@@ -105,19 +206,6 @@ public class ClanChatWebhookPlugin extends Plugin
 		buildRequestAndSend(url, requestBodyBuilder);
 	}
 
-	private void sendDiscordWebhook(DiscordWebhookBody discordWebhookBody)
-	{
-		String configUrl = config.webhook();
-
-		if (Strings.isNullOrEmpty(configUrl)) { return; }
-
-		HttpUrl url = HttpUrl.parse(configUrl);
-		MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
-				.setType(MultipartBody.FORM)
-				.addFormDataPart("payload_json", GSON.toJson(discordWebhookBody));
-
-		buildRequestAndSend(url, requestBodyBuilder);
-	}
 
 	private void buildRequestAndSend(HttpUrl url, MultipartBody.Builder requestBodyBuilder)
 	{
@@ -142,6 +230,7 @@ public class ClanChatWebhookPlugin extends Plugin
 			@Override
 			public void onResponse(Call call, Response response) throws IOException
 			{
+				log.info("Response: " + response.body().string());
 				response.close();
 			}
 		});
