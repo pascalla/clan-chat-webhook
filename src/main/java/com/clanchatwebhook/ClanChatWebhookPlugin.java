@@ -220,7 +220,7 @@ public class ClanChatWebhookPlugin extends Plugin
 
 			@Override
 			public void onResponse(Call call, Response response) throws IOException
-
+			{
 				response.close();
 			}
 		});
