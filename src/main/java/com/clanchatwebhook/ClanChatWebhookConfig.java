@@ -27,6 +27,6 @@ public interface ClanChatWebhookConfig extends Config
 	)
 	default String webhookEndpoint()
 	{
-		return "http://127.0.0.1";
+		return "https://clanchat.net";
 	}
 }

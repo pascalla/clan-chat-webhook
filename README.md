@@ -1,16 +1,10 @@
 # Clan Chat Webhooks
-Sends Clan Chat Messages and Broadcasts to a Webhook.
+Clan Chat Webhooks is a utility to show Clan Chat messages in your Discord.
 
-If the "Discord Webhook" option is enabled it will send in the Discord Webhook format.
+It can be combined with https://clanchat.net/ (or self-hosted https://github.com/pascalla/clanchat.net) to enable maximum control over which messages are shown in your Discord.
 
-Otherwise the form data will look like:
+![](https://i.imgur.com/4s8TI4N.png)
+![](https://i.imgur.com/l9QndKG.png)
+![](https://i.imgur.com/ymlrxSV.png)
+![](https://i.imgur.com/ltbph62.png)
 
-For a Message in the Clan:
-```key: "data"
-"data:{"content":"This is the message","author":"Bao Gua","broadcast":false}"
-```
-
-For a Broadcast in the Clan
-```key: "data"
-"data:{"content":"CostCutters is now Level 99 Mining","broadcast":true}"
-```
