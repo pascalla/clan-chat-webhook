@@ -85,6 +85,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		PVP(8),
 		ATTENDANCE(9),
 		LEVEL_UP(10),
+		COMBAT_ACHIEVEMENTS(11),
 		LOGIN(-1);
 
 		public final int code;
@@ -130,6 +131,10 @@ public class ClanChatWebhookPlugin extends Plugin
 			return SystemMessageType.PVP;
 		} else if (message.contains("has a funny feeling like")) {
 			return SystemMessageType.PET_DROP;
+		} else if (message.contains("has reached") && message.contains("level")) {
+			return SystemMessageType.LEVEL_UP;
+		} else if (message.contains("tier of rewards from Combat Achievements!")) {
+			return SystemMessageType.COMBAT_ACHIEVEMENTS;
 		} else if (message.contains("has left.") || message.contains("has joined.")) {
 			return SystemMessageType.ATTENDANCE;
 		} else {
