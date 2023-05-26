@@ -17,9 +17,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
-import java.util.Objects;
 
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 
@@ -86,6 +84,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		QUEST(7),
 		PVP(8),
 		ATTENDANCE(9),
+		LEVEL_UP(10),
 		LOGIN(-1);
 
 		public final int code;
@@ -146,7 +145,7 @@ public class ClanChatWebhookPlugin extends Plugin
 			return AccountType.IRON;
 		} else if (message.contains("<img=10>")) {
 			return AccountType.HARDCORE_IRON;
-		} else if (message.contains("<img=11>")) {
+		} else if (message.contains("<img=3>")) {
 			return AccountType.ULTIMATE_IRON;
 		} else if (message.contains("<img=41>")) {
 			return AccountType.GROUP_IRON;
