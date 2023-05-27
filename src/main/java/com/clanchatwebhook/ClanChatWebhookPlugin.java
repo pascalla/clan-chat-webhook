@@ -139,7 +139,7 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.COMBAT_ACHIEVEMENTS;
 			} else if (message.contains("received a clue item:")) {
 				return SystemMessageType.CLUE_DROP;
-			} else if (message.contains("has left.") || message.contains("has joined.")) {
+			} else if (message.contains("has left.") || message.contains("has been invited into the clan by") || message.contains("has joined.")) {
 				return SystemMessageType.ATTENDANCE;
 			}
 		}
