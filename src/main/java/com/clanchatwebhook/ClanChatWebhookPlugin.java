@@ -66,8 +66,6 @@ public class ClanChatWebhookPlugin extends Plugin
 
 		if (chatMessage.getType() == ChatMessageType.CLAN_CHAT || chatMessage.getType() == ChatMessageType.CLAN_MESSAGE)
 		{
-			log.debug(chatMessage.getMessage());
-
 			content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
 
 			if (!content.contains("</col>")) {
