@@ -87,6 +87,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		LEVEL_UP(10),
 		COMBAT_ACHIEVEMENTS(11),
 		CLUE_DROP(12),
+		UNKNOWN(13),
 		LOGIN(-1);
 
 		public final int code;
@@ -142,6 +143,8 @@ public class ClanChatWebhookPlugin extends Plugin
 			} else if (message.contains("has left.") || message.contains("has been invited into the clan by") || message.contains("has joined.")) {
 				return SystemMessageType.ATTENDANCE;
 			}
+
+			return SystemMessageType.UNKNOWN;
 		}
 
 		return SystemMessageType.NORMAL;
