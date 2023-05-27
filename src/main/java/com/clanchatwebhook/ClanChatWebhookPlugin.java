@@ -66,7 +66,9 @@ public class ClanChatWebhookPlugin extends Plugin
 
 		if (chatMessage.getType() == ChatMessageType.CLAN_CHAT || chatMessage.getType() == ChatMessageType.CLAN_MESSAGE)
 		{
-			content = sanitizeMessage(chatMessage.getMessage());
+			log.debug(chatMessage.getMessage());
+
+			content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
 
 			if (!content.contains("</col>")) {
 				sendMessage(chatMessage);
@@ -86,6 +88,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		ATTENDANCE(9),
 		LEVEL_UP(10),
 		COMBAT_ACHIEVEMENTS(11),
+		CLUE_DROP(12),
 		LOGIN(-1);
 
 		public final int code;
@@ -113,33 +116,35 @@ public class ClanChatWebhookPlugin extends Plugin
 		}
 	}
 
-	private SystemMessageType getSystemMessageType(String message)
+	private SystemMessageType getSystemMessageType(String message, ChatMessageType messageType)
 	{
-		if (message.contains("received a drop:")) {
-			return SystemMessageType.DROP;
-		} else if (message.contains("received special loot from a raid:")) {
-			return SystemMessageType.RAID_DROP;
-		} else if (message.contains("has completed a quest:")) {
-			return SystemMessageType.QUEST;
-		} else if (message.contains("received a new collection log item:")) {
-			return SystemMessageType.COLLECTION_LOG;
-		} else if (message.contains("personal best:")) {
-			return SystemMessageType.PERSONAL_BEST;
-		} else if (message.contains("To talk in your clan's channel, start each line of chat with")) {
-			return SystemMessageType.LOGIN;
-		} else if (message.contains("has defeated") || message.contains("has been defeated by")) {
-			return SystemMessageType.PVP;
-		} else if (message.contains("has a funny feeling like")) {
-			return SystemMessageType.PET_DROP;
-		} else if (message.contains("has reached") && message.contains("level")) {
-			return SystemMessageType.LEVEL_UP;
-		} else if (message.contains("tier of rewards from Combat Achievements!")) {
-			return SystemMessageType.COMBAT_ACHIEVEMENTS;
-		} else if (message.contains("has left.") || message.contains("has joined.")) {
-			return SystemMessageType.ATTENDANCE;
-		} else {
-			return SystemMessageType.NORMAL;
+		if(messageType == ChatMessageType.CLAN_MESSAGE) {
+			if (message.contains("received a drop:")) {
+				return SystemMessageType.DROP;
+			} else if (message.contains("received special loot from a raid:")) {
+				return SystemMessageType.RAID_DROP;
+			} else if (message.contains("has completed a quest:")) {
+				return SystemMessageType.QUEST;
+			} else if (message.contains("received a new collection log item:")) {
+				return SystemMessageType.COLLECTION_LOG;
+			} else if (message.contains("personal best:")) {
+				return SystemMessageType.PERSONAL_BEST;
+			} else if (message.contains("To talk in your clan's channel, start each line of chat with")) {
+				return SystemMessageType.LOGIN;
+			} else if (message.contains("has defeated") || message.contains("has been defeated by")) {
+				return SystemMessageType.PVP;
+			} else if (message.contains("has a funny feeling like")) {
+				return SystemMessageType.PET_DROP;
+			} else if (message.contains("has reached") && message.contains("level")) {
+				return SystemMessageType.LEVEL_UP;
+			} else if (message.contains("tier of rewards from Combat Achievements!")) {
+				return SystemMessageType.COMBAT_ACHIEVEMENTS;
+			} else if (message.contains("has left.") || message.contains("has joined.")) {
+				return SystemMessageType.ATTENDANCE;
+			}
 		}
+
+		return SystemMessageType.NORMAL;
 	}
 
 	public AccountType getAccountType(String message)
@@ -163,7 +168,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		}
 	}
 
-	private String sanitizeMessage(String message)
+	private String sanitizeMessage(String message, ChatMessageType messageType)
 	{
 		String newMessage = message;
 		newMessage = newMessage.replace((char)160, ' ');
@@ -182,9 +187,9 @@ public class ClanChatWebhookPlugin extends Plugin
 	private void sendMessage(ChatMessage chatMessage)
 	{
 		String author = chatMessage.getName().replace((char)160, ' ').replaceAll("<img=\\d+>", "");
-		String content = sanitizeMessage(chatMessage.getMessage());
+		String content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
 		AccountType accountType = getAccountType(chatMessage.getName());
-		SystemMessageType systemMessageType = getSystemMessageType(chatMessage.getMessage());
+		SystemMessageType systemMessageType = getSystemMessageType(chatMessage.getMessage(), chatMessage.getType());
 
 		ClanMessageEvent messageEvent = new ClanMessageEvent(author, content, accountType, systemMessageType, chatMessage.getTimestamp());
 
