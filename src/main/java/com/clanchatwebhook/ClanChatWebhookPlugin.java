@@ -83,7 +83,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		PET_DROP(4),
 		PERSONAL_BEST(5),
 		COLLECTION_LOG(6),
-		QUEST(7),
+		QUESTS(7),
 		PVP(8),
 		ATTENDANCE(9),
 		LEVEL_UP(10),
@@ -124,7 +124,7 @@ public class ClanChatWebhookPlugin extends Plugin
 			} else if (message.contains("received special loot from a raid:")) {
 				return SystemMessageType.RAID_DROP;
 			} else if (message.contains("has completed a quest:")) {
-				return SystemMessageType.QUEST;
+				return SystemMessageType.QUESTS;
 			} else if (message.contains("received a new collection log item:")) {
 				return SystemMessageType.COLLECTION_LOG;
 			} else if (message.contains("personal best:")) {
@@ -139,6 +139,8 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.LEVEL_UP;
 			} else if (message.contains("tier of rewards from Combat Achievements!")) {
 				return SystemMessageType.COMBAT_ACHIEVEMENTS;
+			} else if (message.contains("received a clue item:")) {
+				return SystemMessageType.CLUE_DROP;
 			} else if (message.contains("has left.") || message.contains("has joined.")) {
 				return SystemMessageType.ATTENDANCE;
 			}
