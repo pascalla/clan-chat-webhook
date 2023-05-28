@@ -87,7 +87,8 @@ public class ClanChatWebhookPlugin extends Plugin
 		LEVEL_UP(10),
 		COMBAT_ACHIEVEMENTS(11),
 		CLUE_DROP(12),
-		UNKNOWN(13),
+		DIARY(13),
+		UNKNOWN(100),
 		LOGIN(-1);
 
 		public final int code;
@@ -134,7 +135,7 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.PVP;
 			} else if (message.contains("has a funny feeling like")) {
 				return SystemMessageType.PET_DROP;
-			} else if (message.contains("has reached") && message.contains("level")) {
+			} else if ((message.contains("has reached") && message.contains("level")) || message.contains("has reached a total level of")) {
 				return SystemMessageType.LEVEL_UP;
 			} else if (message.contains("tier of rewards from Combat Achievements!")) {
 				return SystemMessageType.COMBAT_ACHIEVEMENTS;
@@ -142,6 +143,8 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.CLUE_DROP;
 			} else if (message.contains("has left.") || message.contains("has been invited into the clan by") || message.contains("has joined.")) {
 				return SystemMessageType.ATTENDANCE;
+			} else if(message.contains("has completed the") && message.contains("diary.")) {
+				return SystemMessageType.DIARY;
 			}
 
 			return SystemMessageType.UNKNOWN;
