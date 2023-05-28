@@ -21,8 +21,8 @@ public interface ClanChatWebhookConfig extends Config
 
 	@ConfigItem(
 			keyName = "webhook_endpoint",
-			name = "Webhook Endpoint",
-			description = "The endpoint for your webhook",
+			name = "Endpoint URL",
+			description = "The endpoint URL where your messages will be sent to.",
 			position = 1
 	)
 	default String webhookEndpoint()
