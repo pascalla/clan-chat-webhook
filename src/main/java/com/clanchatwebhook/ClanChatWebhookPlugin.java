@@ -63,13 +63,15 @@ public class ClanChatWebhookPlugin extends Plugin
 		}
 
 		String content;
-
+		String clanName =  config.clanName();
 		if (chatMessage.getType() == ChatMessageType.CLAN_CHAT || chatMessage.getType() == ChatMessageType.CLAN_MESSAGE)
 		{
-			content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
+			if(clanName != null && clanName == client.getClanChannel().getName()){
+				content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
 
-			if (!content.contains("</col>")) {
-				sendMessage(chatMessage);
+				if (!content.contains("</col>")) {
+					sendMessage(chatMessage);
+				}
 			}
 		}
 	}
