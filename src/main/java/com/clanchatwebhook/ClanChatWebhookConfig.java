@@ -29,4 +29,15 @@ public interface ClanChatWebhookConfig extends Config
 	{
 		return "https://clanchat.net";
 	}
+
+	@ConfigItem(
+			keyName = "clan_name",
+			name = "Clan Name",
+			description = "Clan name of the clan you want messages sent.",
+			position = 2
+	)
+	default String clanName()
+	{
+		return "";
+	}
 }
