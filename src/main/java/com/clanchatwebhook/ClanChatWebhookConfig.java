@@ -33,7 +33,7 @@ public interface ClanChatWebhookConfig extends Config
 	@ConfigItem(
 			keyName = "clan_name",
 			name = "Clan Name",
-			description = "Clan name of the clan you want messages sent.",
+			description = "Optional Clan name of the clan you want messages sent from.",
 			position = 2
 	)
 	default String clanName()
