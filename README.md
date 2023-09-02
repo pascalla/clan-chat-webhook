@@ -26,7 +26,7 @@ Secret keys have no limit on how many people can use them simultaneously. The ma
 
 > What is the Guest Features?
 
-The main use case of this is to allow frequent guests in the clan to also have there broadcasts shown in the Discord. This will only show broadcasts related to them from there primary clan in the Discord. They need to be using a Secret Guest Key and be on the approved username list.
+The main use case of this is to allow frequent guests in the clan to also have there broadcasts (level ups, collection logs, quests etc) shown in the Discord. This will only show broadcasts related to them from there primary clan in the Discord. They need to be using a Secret Guest Key and be on the approved username list.
 
 ![](https://i.imgur.com/ZbCScxc.png)
 ![](https://i.imgur.com/XOPMxNt.png)
