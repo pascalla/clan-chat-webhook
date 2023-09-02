@@ -4,11 +4,11 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 
 import com.google.common.base.Strings;
+import jdk.internal.org.jline.utils.Log;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.clan.ClanChannel;
-import net.runelite.api.clan.ClanID;
+import net.runelite.api.clan.*;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ClanChannelChanged;
 import net.runelite.client.config.ConfigManager;
@@ -18,7 +18,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
-
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 
 @Slf4j
@@ -72,13 +71,14 @@ public class ClanChatWebhookPlugin extends Plugin
 			String configClanName = config.clanName();
 
 			if( clanName == null || (!StringUtils.isEmpty(configClanName)  && !configClanName.equalsIgnoreCase(clanName))) {
- 			 return;
+		 		return;
 			}
-				content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
 
-				if (!content.contains("</col>")) {
-					sendMessage(chatMessage);
-				}
+			content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
+
+			if (!content.contains("</col>")) {
+				sendMessage(chatMessage);
+			}
 
 		}
 	}
@@ -205,8 +205,14 @@ public class ClanChatWebhookPlugin extends Plugin
 		String content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
 		AccountType accountType = getAccountType(chatMessage.getName());
 		SystemMessageType systemMessageType = getSystemMessageType(chatMessage.getMessage(), chatMessage.getType());
+		String clanTitle = null;
 
-		ClanMessageEvent messageEvent = new ClanMessageEvent(author, content, accountType, systemMessageType, chatMessage.getTimestamp());
+		if (systemMessageType == SystemMessageType.NORMAL) {
+			ClanRank clanRank = client.getClanChannel().findMember(author).getRank();
+			clanTitle = client.getClanSettings().titleForRank(clanRank).getName();
+		}
+
+		ClanMessageEvent messageEvent = new ClanMessageEvent(author, content, accountType, systemMessageType, clanTitle, chatMessage.getTimestamp());
 
 		sendWebhook(messageEvent);
 	}
