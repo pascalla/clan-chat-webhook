@@ -4,7 +4,6 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 
 import com.google.common.base.Strings;
-import jdk.internal.org.jline.utils.Log;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
