@@ -143,7 +143,7 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.PVP;
 			} else if (message.contains("has a funny feeling like")) {
 				return SystemMessageType.PET_DROP;
-			} else if ((message.contains("has reached") && message.contains("level")) || message.contains("has reached a total level of")) {
+			} else if ((message.contains("has reached") && (message.contains("level") || message.contains("XP"))) || message.contains("has reached a total level of")) {
 				return SystemMessageType.LEVEL_UP;
 			} else if (message.contains("tier of rewards from Combat Achievements!")) {
 				return SystemMessageType.COMBAT_ACHIEVEMENTS;
