@@ -141,7 +141,7 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.LOGIN;
 			} else if (message.contains("has defeated") || message.contains("has been defeated by")) {
 				return SystemMessageType.PVP;
-			} else if (message.contains("has a funny feeling like")) {
+			} else if (message.contains("has a funny feeling like") || message.contains("backpack:") || message.contains("something special:")) {
 				return SystemMessageType.PET_DROP;
 			} else if ((message.contains("has reached") && (message.contains("level") || message.contains("XP"))) || message.contains("has reached a total level of")) {
 				return SystemMessageType.LEVEL_UP;
