@@ -147,7 +147,7 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.LEVEL_UP;
 			} else if (message.contains("tier of rewards from Combat Achievements!")) {
 				return SystemMessageType.COMBAT_ACHIEVEMENTS;
-			} else if (message.contains("received a clue item:")) {
+			} else if (message.contains("received a clue item:") || (message.contains("has completed") && message.contains("combat task"))) {
 				return SystemMessageType.CLUE_DROP;
 			} else if (message.contains("has left.") || message.contains("has been invited into the clan by") || message.contains("has joined.")) {
 				return SystemMessageType.ATTENDANCE;
