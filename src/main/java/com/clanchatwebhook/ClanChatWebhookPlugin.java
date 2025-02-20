@@ -145,7 +145,7 @@ public class ClanChatWebhookPlugin extends Plugin
 				return SystemMessageType.PET_DROP;
 			} else if ((message.contains("has reached") && (message.contains("level") || message.contains("XP"))) || message.contains("has reached a total level of")) {
 				return SystemMessageType.LEVEL_UP;
-			} else if (message.contains("tier of rewards from Combat Achievements!")) {
+			} else if (message.contains("tier of rewards from Combat Achievements!") || (message.contains("has completed") && message.contains("combat task"))) {
 				return SystemMessageType.COMBAT_ACHIEVEMENTS;
 			} else if (message.contains("received a clue item:")) {
 				return SystemMessageType.CLUE_DROP;
