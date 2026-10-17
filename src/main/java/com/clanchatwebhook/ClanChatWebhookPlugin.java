@@ -73,7 +73,7 @@ public class ClanChatWebhookPlugin extends Plugin
 		 		return;
 			}
 
-			content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
+			content = MessageSanitizer.sanitize(chatMessage.getMessage());
 
 			if (!content.contains("</col>")) {
 				sendMessage(chatMessage);
@@ -181,27 +181,10 @@ public class ClanChatWebhookPlugin extends Plugin
 			return AccountType.NORMAL;
 		}
 	}
-
-	private String sanitizeMessage(String message, ChatMessageType messageType)
-	{
-		String newMessage = message;
-		newMessage = newMessage.replace((char)160, ' ');
-		newMessage = newMessage.replace("<lt>", "<");
-		newMessage = newMessage.replace("<gt>", ">");
-		return additionalCustomizations(newMessage);
-	}
-
-	private String additionalCustomizations(String message)
-	{
-		String newMessage = message;
-		newMessage = newMessage.replaceAll("\\<img=\\d+\\>", "");
-		return newMessage;
-	}
-
 	private void sendMessage(ChatMessage chatMessage)
 	{
 		String author = chatMessage.getName().replace((char)160, ' ').replaceAll("<img=\\d+>", "");
-		String content = sanitizeMessage(chatMessage.getMessage(), chatMessage.getType());
+		String content = MessageSanitizer.sanitize(chatMessage.getMessage());
 		AccountType accountType = getAccountType(chatMessage.getName());
 		SystemMessageType systemMessageType = getSystemMessageType(chatMessage.getMessage(), chatMessage.getType());
 		String clanTitle = null;
