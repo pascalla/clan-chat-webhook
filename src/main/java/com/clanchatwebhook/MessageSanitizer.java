@@ -1,38 +1,59 @@
 package com.clanchatwebhook;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.runelite.api.ChatMessageType;
 
 public class MessageSanitizer {
-    public static String sanitize(String message)
+    private static final Pattern VALUE_TAG = Pattern.compile("<(?<name>[a-z_]+_\\d+)(=(?<value>[^>]*)|:(?<format>\\w+))?>");
+
+    public static String sanitize(String message, ChatMessageType messageType)
     {
         String newMessage = message;
         newMessage = newMessage.replace((char)160, ' ');
         newMessage = newMessage.replace("<lt>", "<");
         newMessage = newMessage.replace("<gt>", ">");
-        newMessage = sanitizeKeyValue(newMessage);
+        if (messageType == ChatMessageType.CLAN_MESSAGE) {
+            newMessage = resolveVariables(newMessage);
+        }
 
         return additionalCustomizations(newMessage);
     }
 
-    //Parses key/value tags and inserts value to end of message
-    //e.g. Quest messages: <str_quest_name_0=The Lost Tribe>Username has completed a quest: <str_quest_name_0>
-    //Turns into: Username has completed a quest: The Lost Tribe
-    private static String sanitizeKeyValue(String message){
-        Pattern STRING_TEMPLATE_PATTERN = Pattern.compile("<(?<name>str_\\w+)=(?<value>[^>]*)>");
-        Matcher matcher = STRING_TEMPLATE_PATTERN.matcher(message);
-
-        if (matcher.find()) {
-            String tagName = matcher.group(1);     // e.g., "str_quest_name_0"
-            String tagValue = matcher.group(2);    // e.g., "The Lost Tribe"
-
-            //Remove first tag
-            message = matcher.replaceFirst(" ");
-
-            //Replace second tag with value
-            message = message.replace("<" + tagName + ">", tagValue);
+    private static String resolveVariables(String message)
+    {
+        Map<String, String> values = new HashMap<>();
+        Matcher tag = VALUE_TAG.matcher(message);
+        StringBuffer result = new StringBuffer();
+        while (tag.find()) {
+            String name = tag.group("name");
+            String newValue = tag.group("value");
+            String text;
+            if (newValue != null) {
+                values.put(name, newValue);
+                text = "";
+            } else if (values.containsKey(name)) {
+                text = formatValue(values.get(name), tag.group("format"));
+            } else {
+                text = tag.group();
+            }
+            tag.appendReplacement(result, Matcher.quoteReplacement(text));
         }
-        return message;
+        tag.appendTail(result);
+        return result.toString();
     }
+
+    private static String formatValue(String value, String format)
+    {
+        if ("spacer".equals(format) && value.matches("-?\\d+")) {
+            return String.format(Locale.US, "%,d", new BigInteger(value));
+        }
+        return value;
+    }
+
     private static String additionalCustomizations(String message)
     {
         String newMessage = message;
